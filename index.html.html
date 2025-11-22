@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>EduGenius - Dark Theme</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color:#0f0f0f; color:#e0e0e0; min-height:100vh;
+        }
+        header { background:#1a1a1a; border-bottom:1px solid #333; padding:0 2rem; height:64px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 3px rgba(0,0,0,.5); }
+        .header-left { display:flex; align-items:center; gap:1rem; }
+        .logo-title { font-size:24px; font-weight:bold; background:linear-gradient(90deg,#3b82f6,#9333ea); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .header-right { display:flex; align-items:center; gap:1.5rem; }
+        nav { background:#1a1a1a; border-bottom:1px solid #333; display:flex; gap:2rem; padding:0 2rem; overflow-x:auto; }
+        nav button { background:none; border:none; color:#888; padding:1rem .5rem; cursor:pointer; font-size:14px; font-weight:500; border-bottom:2px solid transparent; transition:all .3s; display:flex; align-items:center; gap:.5rem; white-space:nowrap; }
+        nav button:hover { color:#e0e0e0; border-bottom-color:#555; }
+        nav button.active { color:#3b82f6; border-bottom-color:#3b82f6; }
+        main { max-width:1280px; margin:0 auto; padding:2rem; }
+        .welcome-banner { background:linear-gradient(135deg,#1e3a8a,#6b21a8); color:white; padding:1.5rem; border-radius:12px; margin-bottom:1.5rem; }
+        .subjects-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:2rem; }
+        .subject-card { background:#1a1a1a; padding:1.5rem; border-radius:8px; border:1px solid #333; transition:all .3s; cursor:pointer; }
+        .subject-card:hover { border-color:#3b82f6; transform:translateY(-2px); }
+        .subject-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
+        .subject-name { font-weight:600; margin-bottom:0.75rem; }
+        .progress-bar { width:100%; height:6px; background:#333; border-radius:3px; overflow:hidden; }
+        .progress-fill { height:100%; border-radius:3px; }
+        .blue-fill { background:#3b82f6; }
+        .green-fill { background:#10b981; }
+        .purple-fill { background:#a855f7; }
+        .orange-fill { background:#f97316; }
+        .content-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; margin-bottom:2rem; }
+        .content-card { background:#1a1a1a; padding:1.5rem; border-radius:8px; border:1px solid #333; }
+        .card-title { font-size:18px; font-weight:600; margin-bottom:1rem; display:flex; align-items:center; gap:.5rem; }
+        .lesson-item { background:#252525; padding:1rem; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; cursor:pointer; transition:all .3s; }
+        .lesson-item:hover { background:#2a2a2a; border-left:3px solid #3b82f6; }
+        .lesson-info { flex:1; }
+        .lesson-title { font-weight:600; margin-bottom:0.3rem; }
+        .lesson-meta { font-size:12px; color:#888; }
+        .lesson-status { font-size:14px; font-weight:600; padding:0.25rem 0.75rem; border-radius:4px; cursor:pointer; }
+        .status-completed { background:#10b98133; color:#10b981; }
+        .status-inprogress { background:#f5931633; color:#f59316; }
+        .status-notstarted { background:#64748b33; color:#94a3b8; }
+        .difficulty-badge { font-size:11px; font-weight:600; padding:0.2rem 0.5rem; border-radius:3px; }
+        .difficulty-beginner { background:#10b98133; color:#10b981; }
+        .difficulty-intermediate { background:#f5931633; color:#f59316; }
+        .difficulty-advanced { background:#ef444433; color:#ef4444; }
+        .chat-container { background:#1a1a1a; border:1px solid #333; border-radius:8px; display:flex; flex-direction:column; height:420px; }
+        .chat-header { background:linear-gradient(135deg,#a855f7,#3b82f6); color:white; padding:1rem; border-radius:8px 8px 0 0; display:flex; align-items:center; gap:.5rem; font-weight:600; justify-content:space-between; }
+        .chat-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:.75rem; }
+        .message { display:flex; margin-bottom:.5rem; }
+        .message.user { justify-content:flex-end; }
+        .message-content { max-width:70%; padding:.75rem 1rem; border-radius:8px; word-wrap:break-word; }
+        .message.user .message-content { background:#3b82f6; color:white; }
+        .message.ai .message-content { background:#252525; color:#e0e0e0; border:1px solid #333; }
+        .chat-input-container { padding:1rem; border-top:1px solid #333; display:flex; gap:.5rem; }
+        .chat-input { flex:1; background:#252525; border:1px solid #333; border-radius:6px; padding:.5rem 1rem; color:#e0e0e0; font-size:14px; }
+        .chat-input:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.1); }
+        .button { background:#3b82f6; color:white; border:none; padding:.5rem 1rem; border-radius:6px; cursor:pointer; font-weight:500; transition:all .3s; display:flex; align-items:center; gap:.5rem; font-size:14px; }
+        .button:hover { background:#2563eb; }
+        .quiz-container { background:#1a1a1a; border-radius:8px; border:1px solid #333; padding:1.5rem; max-width:900px; margin:0 auto; }
+        .quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+        .quiz-title { font-size:24px; font-weight:bold; }
+        .quiz-progress-bar { width:100%; height:8px; background:#333; border-radius:4px; overflow:hidden; margin-bottom:1rem; }
+        .question-text { font-size:18px; font-weight:600; margin-bottom:1rem; }
+        .options-container { display:flex; flex-direction:column; gap:.75rem; }
+        .option-button { background:#252525; border:2px solid #333; color:#e0e0e0; padding:1rem; border-radius:8px; cursor:pointer; text-align:left; transition:all .3s; font-weight:500; }
+        .option-button:hover { border-color:#3b82f6; background:rgba(59,130,246,.06); }
+        .hidden { display:none; }
+        .topic-controls { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+        select.topic-select { background:#252525; border:1px solid #333; color:#e0e0e0; padding:.4rem .6rem; border-radius:6px; }
+        .small-note { font-size:12px; color:#888; margin-left:.5rem; }
+        .lessons-container { display:flex; flex-direction:column; gap:1rem; }
+        .lesson-card { background:#1a1a1a; border:1px solid #333; border-radius:8px; padding:1.5rem; cursor:pointer; transition:all .3s; }
+        .lesson-card:hover { border-color:#3b82f6; }
+        .lesson-card-header { display:flex; justify-content:space-between; align-items:start; margin-bottom:1rem; }
+        .lesson-card-title { font-size:18px; font-weight:600; }
+        .lesson-description { font-size:14px; color:#bbb; margin-bottom:0.75rem; line-height:1.5; }
+        .lesson-duration { font-size:12px; color:#888; }
+        .lesson-resources { font-size:12px; color:#3b82f6; margin-top:.5rem; cursor:pointer; }
+        .lesson-notes { background:#252525; padding:.75rem; border-radius:6px; margin-top:.5rem; font-size:13px; line-height:1.6; }
+        .achievement { padding:1rem; border-radius:8px; border:2px solid #333; text-align:center; cursor:pointer; transition:all .3s; }
+        .achievement:hover { transform:scale(1.05); }
+        .achievement.earned { border-color:#eab308; background:rgba(234,179,8,.08); }
+        .results-container { text-align:center; padding:2rem; }
+        .results-emoji { font-size:48px; margin-bottom:1rem; }
+        .results-title { font-size:28px; font-weight:bold; margin-bottom:0.5rem; }
+        .results-score { font-size:36px; font-weight:bold; color:#3b82f6; margin:1rem 0; }
+        .results-message { font-size:18px; color:#10b981; margin-bottom:1rem; }
+        .results-details { max-height:400px; overflow-y:auto; }
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.8); z-index:1000; align-items:center; justify-content:center; }
+        .modal.show { display:flex; }
+        .modal-content { background:#1a1a1a; border:1px solid #333; border-radius:12px; padding:2rem; max-width:600px; max-height:80vh; overflow-y:auto; }
+        .modal-close { color:#888; font-size:28px; cursor:pointer; float:right; line-height:1; }
+        .modal-close:hover { color:#e0e0e0; }
+        @media (max-width:768px) { .content-grid { grid-template-columns:1fr; } nav { gap:1rem; padding:0 1rem; } .message-content { max-width:85%; } .topic-controls { flex-direction:column; align-items:flex-start; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <span style="font-size:24px;">🧠</span>
+            <h1 class="logo-title">EduGenius</h1>
+        </div>
+        <div class="header-right">
+            <div class="points-badge">⭐ <span id="totalPoints">2450</span></div>
+            <div class="user-avatar">👤</div>
+        </div>
+    </header>
+
+    <nav>
+        <button class="nav-btn active" onclick="switchTab(event,'dashboard')">📊 Dashboard</button>
+        <button class="nav-btn" onclick="switchTab(event,'lessons')">📖 Lessons</button>
+        <button class="nav-btn" onclick="switchTab(event,'tutor')">💬 AI Tutor</button>
+        <button class="nav-btn" onclick="switchTab(event,'quiz')">🎯 Quiz</button>
+    </nav>
+
+    <main>
+        <div id="dashboard" class="tab-content">
+            <div class="welcome-banner">
+                <div class="welcome-title">Welcome back to EduGenius!</div>
+                <div class="welcome-subtitle">Continue your learning journey today</div>
+            </div>
+
+            <div class="subjects-grid">
+                <div class="subject-card" onclick="filterLessonsBySubject('Mathematics')">
+                    <div class="subject-header"><span style="font-size:24px;">📊</span><span class="subject-progress">75%</span></div>
+                    <div class="subject-name">Mathematics</div>
+                    <div class="progress-bar"><div class="progress-fill blue-fill" style="width:75%"></div></div>
+                </div>
+                <div class="subject-card" onclick="filterLessonsBySubject('Science')">
+                    <div class="subject-header"><span style="font-size:24px;">🔬</span><span class="subject-progress">60%</span></div>
+                    <div class="subject-name">Science</div>
+                    <div class="progress-bar"><div class="progress-fill green-fill" style="width:60%"></div></div>
+                </div>
+                <div class="subject-card" onclick="filterLessonsBySubject('English')">
+                    <div class="subject-header"><span style="font-size:24px;">🧾</span><span class="subject-progress">45%</span></div>
+                    <div class="subject-name">English</div>
+                    <div class="progress-bar"><div class="progress-fill purple-fill" style="width:45%"></div></div>
+                </div>
+                <div class="subject-card" onclick="filterLessonsBySubject('Social Studies')">
+                    <div class="subject-header"><span style="font-size:24px;">🌍</span><span class="subject-progress">55%</span></div>
+                    <div class="subject-name">Social Studies</div>
+                    <div class="progress-bar"><div class="progress-fill orange-fill" style="width:55%"></div></div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="content-card">
+                    <div class="card-title">📈 Recent Progress</div>
+                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+                        <div class="lesson-item" onclick="openLesson('Introduction to Algebra')">
+                            <div class="lesson-info">
+                                <div class="lesson-title">Introduction to Algebra</div>
+                                <div class="lesson-meta">⏱️ 15 min • <span class="difficulty-badge difficulty-beginner">Beginner</span></div>
+                            </div>
+                            <span class="lesson-status status-completed">✅ Done</span>
+                        </div>
+                        <div class="lesson-item" onclick="openLesson('Basic Grammar')">
+                            <div class="lesson-info">
+                                <div class="lesson-title">Basic Grammar</div>
+                                <div class="lesson-meta">⏱️ 12 min • <span class="difficulty-badge difficulty-beginner">Beginner</span></div>
+                            </div>
+                            <span class="lesson-status status-completed">✅ Done</span>
+                        </div>
+                        <div class="lesson-item" onclick="openLesson('Photosynthesis Basics')">
+                            <div class="lesson-info">
+                                <div class="lesson-title">Photosynthesis Basics</div>
+                                <div class="lesson-meta">⏱️ 18 min • <span class="difficulty-badge difficulty-intermediate">Intermediate</span></div>
+                            </div>
+                            <span class="lesson-status status-inprogress">⏳ In Progress</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-title">🏆 Achievements</div>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;">
+                        <div class="achievement earned"><div style="font-size:24px;margin-bottom:.5rem;">🔥</div><div style="font-size:12px;font-weight:600;color:#eab308;">7-Day Streak</div></div>
+                        <div class="achievement"><div style="font-size:24px;margin-bottom:.5rem;">🧮</div><div style="font-size:12px;font-weight:600;color:#e0e0e0;">Math Master</div></div>
+                        <div class="achievement earned"><div style="font-size:24px;margin-bottom:.5rem;">📚</div><div style="font-size:12px;font-weight:600;color:#eab308;">Quick Learner</div></div>
+                        <div class="achievement"><div style="font-size:24px;margin-bottom:.5rem;">🎯</div><div style="font-size:12px;font-weight:600;color:#e0e0e0;">Quiz Champion</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="lessons" class="tab-content hidden">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                <h2 style="font-size:28px;font-weight:bold;">All Lessons</h2>
+                <div style="font-size:14px;color:#888;">Progress: 12/50 lessons</div>
+            </div>
+            
+            <div class="lessons-container" id="lessonsContainer"></div>
+        </div>
+
+        <div id="tutor" class="tab-content hidden">
+            <div style="display:flex;gap:1rem;margin-bottom:1rem;align-items:center;">
+                <div class="topic-controls">
+                    <label for="topicSelect" style="font-weight:600;margin-right:.5rem;">Practice topic:</label>
+                    <select id="topicSelect" class="topic-select">
+                        <option value="english_grammar">English Grammar (Basics)</option>
+                        <option value="basic_maths">Basic Maths</option>
+                        <option value="algebra">Algebra</option>
+                        <option value="basic_science">Basic Science</option>
+                        <option value="class_6_12_mixed">Class 6-12 Mixed</option>
+                    </select>
+                    <button class="button" onclick="startTopicPractice()">Start Practice</button>
+                </div>
+                <div class="small-note">Or chat with the AI and ask for examples, explanations, or quizzes.</div>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div>🧠 AI Tutor Chat</div>
+                    <div style="font-size:12px;color:#fff;opacity:.9">Tips: "start quiz", "explain algebra", "grammar examples"</div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai"><div class="message-content">Hello! I'm your AI tutor. Choose a topic above or ask me for a quiz, examples, or explanations.</div></div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask your AI tutor..." onkeypress="handleChatKeypress(event)">
+                    <button class="button" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz" class="tab-content hidden">
+            <div class="quiz-container">
+                <div id="quizContent">
+                    <div class="quiz-header">
+                        <h2 class="quiz-title" id="quizTopicTitle">Practice Quiz</h2>
+                        <div style="font-size:14px;color:#888;">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">3</span></div>
+                    </div>
+                    <div class="quiz-progress-bar"><div class="progress-fill blue-fill" id="quizProgressBar" style="width:0%"></div></div>
+                    <div class="question-text" id="questionText">Question will appear here</div>
+                    <div class="options-container" id="optionsContainer"></div>
+                    <div style="margin-top:1rem; display:flex; gap:.5rem;">
+                        <button class="button" onclick="prevQuestion()" style="background:#444">← Prev</button>
+                        <button class="button" onclick="nextQuestion()" style="background:#444">Next →</button>
+                        <button class="button" onclick="finishEarly()" style="background:#6b7280">Finish</button>
+                    </div>
+                </div>
+
+                <div id="resultsContent" class="hidden">
+                    <div class="results-container">
+                        <div class="results-emoji" id="resultEmoji">🎉</div>
+                        <div class="results-title">Quiz Complete!</div>
+                        <div class="results-score" id="finalScore">0/0</div>
+                        <div class="results-message" id="resultMessage">Well done!</div>
+                        <div class="results-details" id="resultDetails" style="margin-top:1rem;"></div>
+                        <div style="margin-top:1rem;display:flex;gap:.5rem;justify-content:center;">
+                            <button class="button" onclick="resetQuiz()">🔄 Try Again</button>
+                            <button class="button" onclick="switchTab(null,'tutor')">💬 Back to Tutor</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="lessonModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeLessonModal()">&times;</span>
+            <div id="modalLessonContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const lessonDatabase = {
+            Mathematics: [
+                { 
+                    title: "Introduction to Algebra", 
+                    duration: "15 min", 
+                    difficulty: "Beginner", 
+                    status: "completed", 
+                    description: "Learn the basics of algebraic expressions, variables, and simple equations.", 
+                    notes: "Key Points:\n• Variables represent unknown values\n• Expressions combine numbers and variables\n• Solve using inverse operations", 
+                    videos: "https://youtu.be/NybHckSEQBI?si=vs2Ci7j5a2RPeKMS", 
+                    resources: "- Algebra Basics",
+                    quizKey: "algebra"
+                },
+                { 
+                    title: "Linear Equations", 
+                    duration: "20 min", 
+                    difficulty: "Intermediate", 
+                    status: "inprogress", 
+                    description: "Master solving linear equations with one and two variables.", 
+                    notes: "Key Points:\n• Linear equations have one solution\n• Graph as straight lines\n• Slope = rise/run", 
+                    videos: "https://youtu.be/hZ6-RHL4lB8?si=SNaOaUw3rLVkrL8S", 
+                    resources: "- Linear Equations",
+                    quizKey: "algebra"
+                },
+                { 
+                    title: "Quadratic Equations", 
+                    duration: "25 min", 
+                    difficulty: "Intermediate", 
+                    status: "notstarted", 
+                    description: "Explore quadratic equations, factoring, and the quadratic formula.", 
+                    notes: "Key Points:\n• ax² + bx + c = 0\n• Solutions using quadratic formula\n• Parabola shape", 
+                    videos: "https://youtu.be/PDIudNFEoGw?si=bTrQUHh_lHXTavsJ", 
+                    resources: "- Quadratic Equations",
+                    quizKey: "algebra"
+                },
+                { 
+                    title: "Geometry Basics", 
+                    duration: "22 min", 
+                    difficulty: "Beginner", 
+                    status: "notstarted", 
+                    description: "Learn about shapes, angles, and area calculations.", 
+                    notes: "Key Points:\n• Area of rectangle = length × width\n• Perimeter = sum of sides\n• Triangle sum = 180°", 
+                    videos: "https://youtu.be/cXSN5i3ujyU?si=6KoO4yRiOEQHhzRS", 
+                    resources:"Math is Fun -Geometry",
+                    quizKey: "basic_maths"
+                }
+            ],
+            Science: [
+                { 
+                    title: "Photosynthesis Basics", 
+                    duration: "18 min", 
+                    difficulty: "Intermediate", 
+                    status: "inprogress", 
+                    description: "Understand how plants convert sunlight into energy.", 
+                    notes: "Key Points:\n• CO2 + Water + Light = Glucose + O2\n• Occurs in chloroplasts\n• Light & dark reactions", 
+                    videos: "https://youtu.be/XSMjfvpDtTY?si=dQzgwn9RX8ZIh5eI", 
+                    resources: "- Photosynthesis",
+                    quizKey: "basic_science"
+                },
+                { 
+                    title: "The Circulatory System", 
+                    duration: "16 min", 
+                    difficulty: "Beginner", 
+                    status: "completed", 
+                    description: "Learn about the heart, blood vessels, and blood flow.", 
+                    notes: "Key Points:\n• Heart pumps blood\n• Arteries carry blood away\n• Veins return blood", 
+                    videos: "https://youtu.be/_vZ0lefPg_0?si=o_SqXsgAhKTbkkmB", 
+                    resources: "- Circulatory System",
+                    quizKey: "basic_science"
+                },
+                { 
+                    title: "States of Matter", 
+                    duration: "14 min", 
+                    difficulty: "Beginner", 
+                    status: "notstarted", 
+                    description: "Explore solid, liquid, and gas states.", 
+                    notes: "Key Points:\n• Solid: fixed shape\n• Liquid: takes container shape\n• Gas: no fixed shape", 
+                    videos: "https://youtu.be/QQsybALJoew?si=wJmlwXZZFb8MXA41", 
+                    resources: "-States of Matter",
+                    quizKey: "basic_science"
+                },
+                { 
+                    title: "Cells and Organisms", 
+                    duration: "20 min", 
+                    difficulty: "Intermediate", 
+                    status: "notstarted", 
+                    description: "Understand cell structure and functions.", 
+                    notes: "Key Points:\n• Cell = basic unit of life\n• Nucleus controls activities\n• Organelles have specific roles", 
+                    videos: "https://youtu.be/URUJD5NEXC8?si=EJ72mlvdoAa-U0QX", 
+                    resources: "- Cell Biology",
+                    quizKey: "basic_science"
+                }
+            ],
+            English: [
+                { 
+                    title: "Basic Grammar", 
+                    duration: "12 min", 
+                    difficulty: "Beginner", 
+                    status: "completed", 
+                    description: "Master parts of speech: nouns, verbs, adjectives, and adverbs.", 
+                    notes: "Key Points:\n• Noun: person, place, thing\n• Verb: action word\n• Adjective: describes noun\n• Adverb: describes verb", 
+                    videos: "https://youtu.be/AVYfyTvc9KY?si=NMCrcOhM07aY4NGJ", 
+                    resources: "English Grammar Online",
+                    quizKey: "english_grammar"
+                },
+                { 
+                    title: "Tenses and Verb Forms", 
+                    duration: "19 min", 
+                    difficulty: "Intermediate", 
+                    status: "notstarted", 
+                    description: "Learn present, past, and future tenses.", 
+                    notes: "Key Points:\n• Present: happening now\n• Past: already happened\n• Future: will happen\n• Perfect tenses", 
+                    videos: "https://youtu.be/sCiG6rlk2Bc?si=soLAwDq23290pVOt", 
+                    resources: "-English Tenses",
+                    quizKey: "english_grammar"
+                },
+                { 
+                    title: "Advanced Writing", 
+                    duration: "22 min", 
+                    difficulty: "Advanced", 
+                    status: "notstarted", 
+                    description: "Write essays, stories, and formal letters.", 
+                    notes: "Key Points:\n• Essay structure\n• Paragraph coherence\n• Persuasive techniques\n• Story elements", 
+                    videos: "https://youtu.be/gFXE9n7hrOI?si=XlEwXLBhvQdw4HeY", 
+                    resources: "Purdue OWL",
+                    quizKey: "english_grammar"
+                },
+                { 
+                    title: "Reading Comprehension", 
+                    duration: "17 min", 
+                    difficulty: "Intermediate", 
+                    status: "notstarted", 
+                    description: "Improve reading skills and understanding.", 
+                    notes: "Key Points:\n• Identify main idea\n• Supporting details\n• Inference\n• Summary techniques", 
+                    videos: "https://youtu.be/3nLX0CjMO-Q?si=DlR1s03aIpB7zKnv", 
+                    resources: "- Reading",
+                    quizKey: "english_grammar"
+                }
+            ],
+            "Social Studies": [
+                { 
+                    title: "World Geography Basics", 
+                    duration: "17 min", 
+                    difficulty: "Beginner", 
+                    status: "inprogress", 
+                    description: "Learn about continents, countries, and major geographical features.", 
+                    notes: "Key Points:\n• 7 continents\n• Ocean coverage\n• Climate zones\n• Natural resources", 
+                    videos:"https://youtu.be/FEuSURHQSXs?si=16RDFt-UPiGzUaWv", 
+                    resources: "National Geographic",
+                    quizKey: "class_6_12_mixed"
+                },
+                { 
+                    title: "Ancient Civilizations", 
+                    duration: "21 min", 
+                    difficulty: "Intermediate", 
+                    status: "notstarted", 
+                    description: "Explore ancient Egypt, Rome, Greece, and Indus Valley.", 
+                    notes: "Key Points:\n• Egypt: pyramids, Nile\n• Rome: empire, law\n• Greece: democracy, philosophy\n• Indus: urban planning", 
+                    videos: "https://youtube.com/watch?v=ancient-civ", 
+                    resources: "History.com",
+                    quizKey: "class_6_12_mixed"
+                },
+                { 
+                    title: "Modern History", 
+                    duration: "23 min", 
+                    difficulty: "Intermediate", 
+                    status: "notstarted", 
+                    description: "Study major world events from Renaissance to present.", 
+                    notes: "Key Points:\n• Renaissance: rebirth of learning\n• Industrial Revolution\n• World Wars\n• Cold War", 
+                    videos: "https://youtube.com/watch?v=modern-history", 
+                    resources: "Khan Academy - World History",
+                    quizKey: "class_6_12_mixed"
+                },
+                { 
+                    title: "Government and Civics", 
+                    duration: "18 min", 
+                    difficulty: "Intermediate", 
+                    status: "notstarted", 
+                    description: "Understand different government systems and citizenship.", 
+                    notes: "Key Points:\n• Democracy, Monarchy, Dictatorship\n• Rights and responsibilities\n• Constitution\n• Voting", 
+                    videos: "https://youtube.com/watch?v=civics", 
+                    resources: "iCivics",
+                    quizKey: "class_6_12_mixed"
+                }
+            ]
+        };
+
+        const topicBank = {
+            english_grammar: {
+                title: 'English Grammar (Basics)',
+                questions: [
+                    { question: "Choose the correct past tense form: 'I ____ to the store yesterday.'", options: ["go", "went", "gone", "going"], correct: 1 },
+                    { question: "Select the correct article: 'She adopted ____ cat.'", options: ["a", "an", "the", "no article"], correct: 0 },
+                    { question: "Which is a synonym of 'happy'?", options: ["sad", "joyful", "angry", "tired"], correct: 1 },
+                    { question: "Identify the noun in the sentence: 'The dog barked loudly.'", options: ["dog", "barked", "loudly", "the"], correct: 0 },
+                    { question: "What is the plural of 'child'?", options: ["childs", "children", "childes", "child's"], correct: 1 },
+                    { question: "Choose the correct verb: 'He ____ to school every day.'", options: ["go", "goes", "gone", "going"], correct: 1 },
+                    { question: "Which word is an adverb?", options: ["quick", "quickly", "quickness", "quicken"], correct: 1 },
+                    { question: "Select correct punctuation: 'What is your name'", options: ["What is your name.", "What is your name?", "What is your name,", "What is your name;"], correct: 1 }
+                ]
+            },
+            basic_maths: {
+                title: 'Basic Maths',
+                questions: [
+                    { question: "What is 8 + 7?", options: ["14", "15", "16", "13"], correct: 1 },
+                    { question: "What is 12 ÷ 3?", options: ["3", "4", "6", "9"], correct: 1 },
+                    { question: "Which number is even?", options: ["7", "13", "22", "15"], correct: 2 },
+                    { question: "What is 5 × 6?", options: ["30", "11", "56", "35"], correct: 0 },
+                    { question: "What is 20 - 7?", options: ["13", "14", "12", "15"], correct: 0 },
+                    { question: "18 ÷ 6 = ?", options: ["2", "3", "4", "6"], correct: 1 },
+                    { question: "9 × 7 = ?", options: ["62", "63", "64", "65"], correct: 1 },
+                    { question: "What is 100 - 25?", options: ["65", "70", "75", "80"], correct: 2 }
+                ]
+            },
+            algebra: {
+                title: 'Algebra (Basics)',
+                questions: [
+                    { question: "Solve for x: x + 5 = 12", options: ["5", "7", "17", "12"], correct: 1 },
+                    { question: "Simplify: 2(x + 3)", options: ["2x + 6", "2x + 3", "x + 6", "2x + 9"], correct: 0 },
+                    { question: "If 3x = 9, x = ?", options: ["1", "3", "6", "9"], correct: 1 },
+                    { question: "Which is a linear equation?", options: ["x^2 + 2 = 0", "2x + 1 = 0", "x^3 - 1 = 0", "xy + 3 = 0"], correct: 1 },
+                    { question: "Solve: 2x - 4 = 10", options: ["7", "6", "5", "3"], correct: 0 },
+                    { question: "What is the value of x: x/2 = 8?", options: ["4", "8", "16", "2"], correct: 2 },
+                    { question: "Simplify: 3x + 2x", options: ["5x", "6x", "5x²", "x"], correct: 0 },
+                    { question: "If x - 3 = 5, then x = ?", options: ["2", "8", "5", "3"], correct: 1 }
+                ]
+            },
+            basic_science: {
+                title: 'Basic Science',
+                questions: [
+                    { question: "What is the state of water at 100°C (at sea level)?", options: ["Solid", "Liquid", "Gas (steam)", "Plasma"], correct: 2 },
+                    { question: "Which organ pumps blood around the body?", options: ["Lungs", "Liver", "Heart", "Kidney"], correct: 2 },
+                    { question: "Plants make food by the process called?", options: ["Respiration", "Photosynthesis", "Digestion", "Transpiration"], correct: 1 },
+                    { question: "What do bees produce?", options: ["Milk", "Honey", "Silk", "Wax only"], correct: 1 },
+                    { question: "Which element is most abundant in air?", options: ["Oxygen", "Nitrogen", "Hydrogen", "Carbon"], correct: 1 },
+                    { question: "What is the basic unit of life?", options: ["Atom", "Molecule", "Cell", "Organ"], correct: 2 },
+                    { question: "How many bones does an adult human have?", options: ["150", "206", "256", "306"], correct: 1 },
+                    { question: "What do plants need for photosynthesis?", options: ["Light, water, CO2", "Air, sun, soil", "Water, oxygen", "Nitrogen, phosphorus"], correct: 0 }
+                ]
+            },
+            class_6_12_mixed: {
+                title: 'Class 6-12 Mixed',
+                questions: [
+                    { question: "Which is a prime number?", options: ["21", "17", "27", "25"], correct: 1 },
+                    { question: "Choose the correct passive of: 'She writes a letter.'", options: ["A letter is written by her.", "A letter was written by her.", "A letter is being written by her.", "A letter written by her."], correct: 0 },
+                    { question: "Which gas is essential for respiration?", options: ["Nitrogen", "Oxygen", "Carbon dioxide", "Helium"], correct: 1 },
+                    { question: "Solve: 2x - 4 = 10", options: ["7", "6", "5", "3"], correct: 0 },
+                    { question: "What is the capital of France?", options: ["Lyon", "Paris", "Marseille", "Nice"], correct: 1 },
+                    { question: "What is the largest planet?", options: ["Saturn", "Neptune", "Jupiter", "Uranus"], correct: 2 },
+                    { question: "√16 = ?", options: ["2", "4", "8", "6"], correct: 1 },
+                    { question: "Who discovered gravity?", options: ["Einstein", "Newton", "Darwin", "Galileo"], correct: 1 }
+                ]
+            }
+        };
+
+        let questions = [], currentQ = 0, quizScore = 0, quizAnswers = [], currentTopicKey = null, currentLessonTitle = null;
+
+        function renderLessonsPage() {
+            const container = document.getElementById('lessonsContainer');
+            container.innerHTML = '';
+            for (const [subject, lessons] of Object.entries(lessonDatabase)) {
+                const subjectDiv = document.createElement('div');
+                subjectDiv.innerHTML = `<h3 style="font-size:18px; font-weight:600; margin-bottom:1rem; color:#3b82f6;">📖 ${subject}</h3><div style="display:flex;flex-direction:column;gap:1rem;margin-bottom:2rem;" id="lessons-${subject}"></div>`;
+                container.appendChild(subjectDiv);
+                const lessonsDiv = document.getElementById(`lessons-${subject}`);
+                lessons.forEach(lesson => {
+                    const statusClass = `status-${lesson.status}`;
+                    const difficultyClass = `difficulty-${lesson.difficulty.toLowerCase()}`;
+                    const card = document.createElement('div');
+                    card.className = 'lesson-card';
+                    card.onclick = () => openLesson(lesson.title);
+                    card.innerHTML = `
+                        <div class="lesson-card-header">
+                            <div>
+                                <div class="lesson-card-title">${lesson.title}</div>
+                                <span class="lesson-status ${statusClass}">${getStatusText(lesson.status)}</span>
+                            </div>
+                        </div>
+                        <div class="lesson-description">${lesson.description}</div>
+                        <div class="lesson-duration">⏱️ ${lesson.duration} • <span class="difficulty-badge ${difficultyClass}">${lesson.difficulty}</span></div>
+                        <div class="lesson-resources">📚 Resources & Videos Available</div>
+                    `;
+                    lessonsDiv.appendChild(card);
+                });
+            }
+        }
+
+        function getStatusText(status) {
+            if (status === 'completed') return '✅ Completed';
+            if (status === 'inprogress') return '⏳ In Progress';
+            return 'Not Started';
+        }
+
+        function filterLessonsBySubject(subject) {
+            switchTab(null, 'lessons');
+            setTimeout(() => {
+                const element = document.querySelector(`#lessons-${subject}`)?.parentElement;
+                if (element) element.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function openLesson(lessonTitle) {
+            let lesson = null;
+            for (const lessons of Object.values(lessonDatabase)) {
+                lesson = lessons.find(l => l.title === lessonTitle);
+                if (lesson) break;
+            }
+            if (!lesson) return;
+            currentLessonTitle = lessonTitle;
+            const modal = document.getElementById('lessonModal');
+            const content = document.getElementById('modalLessonContent');
+            content.innerHTML = `
+                <h2 style="font-size:24px; font-weight:bold; margin-bottom:1rem;">${lesson.title}</h2>
+                <p style="color:#aaa; margin-bottom:1rem;">${lesson.description}</p>
+                <div style="display:flex; gap:1rem; margin-bottom:1.5rem;">
+                    <span>⏱️ ${lesson.duration}</span>
+                    <span class="difficulty-badge difficulty-${lesson.difficulty.toLowerCase()}">${lesson.difficulty}</span>
+                </div>
+                <div style="background:#252525; padding:1rem; border-radius:6px; margin-bottom:1rem;">
+                    <h3 style="font-weight:600; margin-bottom:.5rem;">📝 Quick Notes:</h3>
+                    <div class="lesson-notes">${lesson.notes.replace(/\n/g, '<br>')}</div>
+                </div>
+                <div style="background:#252525; padding:1rem; border-radius:6px; margin-bottom:1rem;">
+                    <h3 style="font-weight:600; margin-bottom:.5rem;">📹 Video Resources:</h3>
+                    <a href="${lesson.videos}" target="_blank" style="color:#3b82f6;">Watch Lesson Video</a>
+                </div>
+                <div style="background:#252525; padding:1rem; border-radius:6px; margin-bottom:1rem;">
+                    <h3 style="font-weight:600; margin-bottom:.5rem;">📚 Additional Resources:</h3>
+                    <p>${lesson.resources}</p>
+                </div>
+                <div style="display:flex; gap:.5rem;">
+                    <button class="button" onclick="closeLessonModal()">Close</button>
+                    <button class="button" style="background:#10b981;" onclick="startLessonQuiz('${lesson.quizKey}')">📋 Take Quiz on This Lesson</button>
+                </div>
+            `;
+            modal.classList.add('show');
+        }
+
+        function closeLessonModal() {
+            document.getElementById('lessonModal').classList.remove('show');
+        }
+
+        function startLessonQuiz(quizKey) {
+            closeLessonModal();
+            startTopicPractice(quizKey);
+        }
+
+        function switchTab(e, tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tab).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            if (e && e.target) e.target.classList.add('active');
+            if (tab === 'lessons') renderLessonsPage();
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            const messagesDiv = document.getElementById('chatMessages');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = '<div class="message-content">' + escapeHtml(msg) + '</div>';
+            messagesDiv.appendChild(userMsg);
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            setTimeout(() => handleAiReply(msg), 600);
+        }
+
+        function handleAiReply(msg) {
+            const messagesDiv = document.getElementById('chatMessages');
+            let aiResponse = generateAiResponse(msg);
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'message ai';
+            aiMsg.innerHTML = '<div class="message-content">' + aiResponse + '</div>';
+            messagesDiv.appendChild(aiMsg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function handleChatKeypress(e) { if (e.key === 'Enter') sendChatMessage(); }
+
+        function generateAiResponse(msg) {
+            const text = msg.toLowerCase();
+            if (text.includes('start quiz') || text.includes('practice') || text.includes('quiz')) {
+                for (const key of Object.keys(topicBank)) {
+                    if (text.includes(key.split('_').join(' ')) || text.includes(topicBank[key].title.toLowerCase().split(' ')[0])) {
+                        startTopicPractice(key);
+                        return `Starting a practice quiz on "${topicBank[key].title}". Opening quiz...`;
+                    }
+                }
+                return 'Sure — pick a topic from the dropdown above or say "start quiz on algebra" or "start quiz on english grammar".';
+            }
+            if (text.includes('explain') || text.includes('how') || text.includes('solve')) {
+                if (text.includes('slope') || text.includes('y =')) return 'Slope describes the steepness of a line. For y = mx + b, slope = m. For example, in y = 2x + 3 the slope is 2.';
+                if (text.includes('photosynthesis')) return 'Photosynthesis is how plants convert sunlight, water and CO2 into glucose and oxygen using chlorophyll.';
+                if (text.includes('past tense') || text.includes('verb')) return 'Past tense of regular verbs is often formed by adding -ed (e.g., "walk" → "walked"). Irregular verbs differ (go → went).';
+                return "I can explain concepts step-by-step. Tell me the specific topic (e.g., 'explain quadratic formula' or 'how to solve linear equations').";
+            }
+            if (text.includes('examples') || text.includes('practice problems')) return 'I can provide example questions or a short quiz. Choose a topic or say "give me algebra examples".';
+            return "Nice question — could you specify a topic (english grammar, basic maths, algebra, basic science) or ask me to 'start quiz' on a topic?";
+        }
+
+        function startTopicPractice(forcedKey) {
+            const select = document.getElementById('topicSelect');
+            const key = forcedKey || select.value;
+            if (!topicBank[key]) return;
+            const topic = topicBank[key];
+            questions = JSON.parse(JSON.stringify(topic.questions));
+            currentTopicKey = key;
+            currentQ = 0; quizScore = 0; quizAnswers = [];
+            document.getElementById('quizTopicTitle').textContent = topic.title + ' Quiz';
+            document.getElementById('totalQuestions').textContent = questions.length;
+            loadQuestion();
+            switchTab(null, 'quiz');
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQ];
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('currentQuestion').textContent = currentQ + 1;
+            document.getElementById('quizProgressBar').style.width = ((currentQ) / questions.length) * 100 + '%';
+            const options = document.getElementById('optionsContainer');
+            options.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-button';
+                btn.innerHTML = '<strong>' + String.fromCharCode(65 + idx) + '.</strong> ' + escapeHtml(opt);
+                btn.onclick = () => answerQuestion(idx);
+                options.appendChild(btn);
+            });
+            document.getElementById('quizContent').classList.remove('hidden');
+            document.getElementById('resultsContent').classList.add('hidden');
+        }
+
+        function answerQuestion(idx) {
+            const isCorrect = idx === questions[currentQ].correct;
+            quizAnswers[currentQ] = { answer: idx, correct: isCorrect };
+            quizScore = quizAnswers.reduce((s,a) => s + (a && a.correct ? 1 : 0), 0);
+            const options = Array.from(document.querySelectorAll('.option-button'));
+            options.forEach((b, i) => {
+                b.style.opacity = '0.6';
+                if (i === questions[currentQ].correct) b.style.borderColor = '#10b981';
+                if (i === idx && !isCorrect) b.style.borderColor = '#ef4444';
+            });
+            setTimeout(() => { if (currentQ < questions.length - 1) { currentQ++; loadQuestion(); } else showResults(); }, 650);
+        }
+
+        function prevQuestion() { if (currentQ > 0) { currentQ--; loadQuestion(); } }
+        function nextQuestion() { if (currentQ < questions.length - 1) { currentQ++; loadQuestion(); } }
+        function finishEarly() { showResults(); }
+
+        function showResults() {
+            document.getElementById('quizContent').classList.add('hidden');
+            document.getElementById('resultsContent').classList.remove('hidden');
+            const total = questions.length;
+            quizScore = quizAnswers.reduce((s,a) => s + (a && a.correct ? 1 : 0), 0);
+            const percentage = (quizScore / total) * 100;
+            document.getElementById('finalScore').textContent = quizScore + '/' + total;
+            if (percentage >= 80) { document.getElementById('resultEmoji').textContent = '🎉'; document.getElementById('resultMessage').textContent = 'Excellent work!'; }
+            else if (percentage >= 60) { document.getElementById('resultEmoji').textContent = '👏'; document.getElementById('resultMessage').textContent = 'Good job! Keep practicing.'; }
+            else { document.getElementById('resultEmoji').textContent = '💪'; document.getElementById('resultMessage').textContent = "Keep studying and you'll improve!"; }
+            let details = '';
+            questions.forEach((q, idx) => {
+                const ans = quizAnswers[idx];
+                const status = (ans && ans.correct) ? '✅' : '❌';
+                const given = ans ? (String.fromCharCode(65 + ans.answer) + '. ' + escapeHtml(q.options[ans.answer])) : 'No answer';
+                const correct = String.fromCharCode(65 + q.correct) + '. ' + escapeHtml(q.options[q.correct]);
+                details += `<div style="background:#252525;border-radius:6px;padding:.6rem;margin-bottom:.5rem;display:flex;justify-content:space-between;"><div style="max-width:70%"><strong>Q${idx+1}:</strong> ${escapeHtml(q.question)}<div style="font-size:12px;color:#9ca3af;margin-top:4px">Your answer: ${given}</div></div><div style="text-align:right">${status}<div style="font-size:12px;color:#9ca3af;margin-top:6px">Correct: ${correct}</div></div></div>`;
+            });
+            document.getElementById('resultDetails').innerHTML = details;
+        }
+
+        function resetQuiz() {
+            currentQ = 0; quizScore = 0; quizAnswers = [];
+            if (currentTopicKey && topicBank[currentTopicKey]) {
+                questions = JSON.parse(JSON.stringify(topicBank[currentTopicKey].questions));
+                document.getElementById('quizTopicTitle').textContent = topicBank[currentTopicKey].title + ' Quiz';
+                document.getElementById('totalQuestions').textContent = questions.length;
+            }
+            document.getElementById('resultsContent').classList.add('hidden');
+            document.getElementById('quizContent').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function escapeHtml(unsafe) {
+            return String(unsafe).replace(/[&<"'>]/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]); });
+        }
+
+        document.getElementById('totalQuestions').textContent = questions.length;
+    </script>
+</body>
+</html>
